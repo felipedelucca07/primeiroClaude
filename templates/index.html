@@ -56,9 +56,15 @@
   {% set inteiro, centavos = p.preco | preco_partes %}
   <article class="produto" data-id="{{ p.id }}" data-nome="{{ p.nome | lower }}"
            data-preco="{{ p.preco }}" data-estoque="{{ p.estoque }}">
+    {% if p.imagem %}
+    <div class="produto-imagem produto-foto">
+      <img src="{{ url_for('static', filename='uploads/' ~ p.imagem) }}" alt="{{ p.nome }}" loading="lazy">
+    </div>
+    {% else %}
     <div class="produto-imagem" style="--matiz: {{ (p.id * 47) % 360 }}" aria-hidden="true">
       {{ p.nome[:1] | upper }}
     </div>
+    {% endif %}
     <div class="produto-info">
       <h2 class="produto-nome">{{ p.nome }}</h2>
       <p class="produto-preco">

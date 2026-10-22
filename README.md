@@ -12,6 +12,8 @@ mesmo banco de dados (`loja.db`).
   e produtos em cartões com o preço em destaque
 - Busca instantânea pelo cabeçalho e seletor "Ordenar por" (recentes, preço,
   nome e estoque)
+- Fotos dos produtos, com envio por clique ou arrastar e soltar e prévia antes
+  de salvar
 - Indicação de estoque nos cartões (em estoque, últimas unidades e esgotado)
 - Cadastro e edição com validação e mensagens de erro por campo
 - Botões +/− para o estoque e prévia do valor total enquanto digita
@@ -49,6 +51,17 @@ Abra http://127.0.0.1:5000 no navegador.
 Preços aceitam vírgula ou ponto (`49,90` ou `49.90`). Preço e estoque não podem
 ser negativos. Produtos com menos de 5 unidades aparecem como "Últimas unidades!".
 
+### Fotos dos produtos
+
+- Formatos aceitos: PNG, JPG, GIF e WEBP, com até 5 MB. O servidor confere o
+  conteúdo do arquivo, não só a extensão.
+- A foto é opcional; produtos sem foto mostram a inicial do nome.
+- Na edição, envie uma nova foto para trocar a atual ou marque "Remover foto
+  atual".
+- As fotos ficam em `static/uploads/` com nomes aleatórios. Ao trocar a foto ou
+  remover o produto, o arquivo antigo é apagado.
+- `static/uploads/` não vai para o git, assim como o `loja.db`.
+
 ## Versão de terminal
 
 ```bash
@@ -66,7 +79,7 @@ python3 main.py
 ```
 
 Na edição, deixe um campo em branco para manter o valor atual. A versão de
-terminal não precisa do Flask.
+terminal não precisa do Flask e não mexe nas fotos.
 
 ## Banco de dados
 
@@ -81,6 +94,10 @@ Tabela `produtos`:
 | `nome` | TEXT | obrigatório |
 | `preco` | REAL | maior ou igual a 0 |
 | `estoque` | INTEGER | maior ou igual a 0 |
+| `imagem` | TEXT | opcional, nome do arquivo em `static/uploads/` |
+
+Bancos criados antes da coluna `imagem` existir são atualizados
+automaticamente ao abrir, sem perder os produtos.
 
 ## Estrutura
 
@@ -90,7 +107,8 @@ loja.py           acesso ao banco SQLite
 main.py           menu interativo no terminal
 templates/        páginas HTML (Jinja2)
 static/style.css  estilos
-static/app.js     interações (busca, ordenação, confirmação, prévia)
+static/app.js     interações (busca, ordenação, confirmação, prévias)
+static/uploads/   fotos enviadas (criada automaticamente)
 requirements.txt  dependências
 ```
 

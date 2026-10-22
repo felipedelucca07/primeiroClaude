@@ -42,7 +42,7 @@
   <div class="avisos" aria-live="polite">
     {% for categoria, mensagem in get_flashed_messages(with_categories=true) %}
       <div class="aviso aviso-{{ categoria }}" role="status">
-        <span class="aviso-icone" aria-hidden="true">✓</span>
+        <span class="aviso-icone" aria-hidden="true">{{ "!" if categoria == "erro" else "✓" }}</span>
         <span>{{ mensagem }}</span>
         <button type="button" class="aviso-fechar" aria-label="Fechar">×</button>
       </div>

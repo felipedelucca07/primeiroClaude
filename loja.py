@@ -14,18 +14,24 @@ def conectar(caminho=DB_PATH):
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL,
             preco REAL NOT NULL CHECK (preco >= 0),
-            estoque INTEGER NOT NULL DEFAULT 0 CHECK (estoque >= 0)
+            estoque INTEGER NOT NULL DEFAULT 0 CHECK (estoque >= 0),
+            imagem TEXT
         )
         """
     )
+    # Bancos criados antes da coluna de imagem existir
+    colunas = [c["name"] for c in conn.execute("PRAGMA table_info(produtos)")]
+    if "imagem" not in colunas:
+        with conn:
+            conn.execute("ALTER TABLE produtos ADD COLUMN imagem TEXT")
     return conn
 
 
-def criar_produto(conn, nome, preco, estoque):
+def criar_produto(conn, nome, preco, estoque, imagem=None):
     with conn:
         cur = conn.execute(
-            "INSERT INTO produtos (nome, preco, estoque) VALUES (?, ?, ?)",
-            (nome, preco, estoque),
+            "INSERT INTO produtos (nome, preco, estoque, imagem) VALUES (?, ?, ?, ?)",
+            (nome, preco, estoque, imagem),
         )
     return cur.lastrowid
 
@@ -65,6 +71,13 @@ def atualizar_produto(conn, produto_id, nome, preco, estoque):
             (nome, preco, estoque, produto_id),
         )
     return cur.rowcount > 0
+
+
+def definir_imagem(conn, produto_id, imagem):
+    with conn:
+        conn.execute(
+            "UPDATE produtos SET imagem = ? WHERE id = ?", (imagem, produto_id)
+        )
 
 
 def remover_produto(conn, produto_id):

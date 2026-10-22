@@ -69,6 +69,50 @@ if (dialogo) {
   });
 }
 
+// Formulário: prévia da foto escolhida (clique ou arrastar e soltar)
+const campoImagem = document.getElementById("imagem");
+if (campoImagem) {
+  const area = document.getElementById("upload");
+  const previaFoto = document.getElementById("upload-previa");
+  const textoUpload = document.getElementById("upload-texto");
+  const removerFoto = document.getElementById("remover-imagem");
+  const fotoOriginal = previaFoto.getAttribute("src");
+
+  const mostrar = (src) => {
+    previaFoto.src = src || "";
+    previaFoto.hidden = !src;
+    textoUpload.hidden = Boolean(src);
+  };
+
+  campoImagem.addEventListener("change", () => {
+    const arquivo = campoImagem.files[0];
+    if (arquivo) {
+      mostrar(URL.createObjectURL(arquivo));
+      if (removerFoto) removerFoto.checked = false;
+    } else {
+      mostrar(fotoOriginal);
+    }
+  });
+
+  if (removerFoto) {
+    removerFoto.addEventListener("change", () => {
+      if (removerFoto.checked) {
+        campoImagem.value = "";
+        mostrar("");
+      } else {
+        mostrar(fotoOriginal);
+      }
+    });
+  }
+
+  ["dragenter", "dragover"].forEach((tipo) =>
+    area.addEventListener(tipo, () => area.classList.add("arrastando"))
+  );
+  ["dragleave", "drop"].forEach((tipo) =>
+    area.addEventListener(tipo, () => area.classList.remove("arrastando"))
+  );
+}
+
 // Formulário: botões + / − do estoque e prévia do valor total
 const estoque = document.getElementById("estoque");
 const preco = document.getElementById("preco");
