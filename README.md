@@ -1,26 +1,56 @@
 # primeiroClaude — CRUD de Loja
 
-CRUD simples de produtos de uma loja, feito em Python e executado no terminal.
-Os dados ficam salvos em um banco SQLite local (`loja.db`).
+CRUD simples de produtos de uma loja, feito em Python com **Flask** e **SQLite**.
+Tem uma interface web interativa e também um menu no terminal; os dois usam o
+mesmo banco de dados (`loja.db`).
+
+## Funcionalidades
+
+- Painel com resumo: total de produtos, itens em estoque, valor do estoque e
+  produtos com estoque baixo
+- Tabela de produtos com busca instantânea e ordenação por coluna
+- Selos coloridos de estoque (normal, baixo e esgotado)
+- Cadastro e edição com validação e mensagens de erro por campo
+- Botões +/− para o estoque e prévia do valor total enquanto digita
+- Confirmação antes de remover um produto
+- Tema claro/escuro automático e layout adaptado para celular
 
 ## Requisitos
 
 - Python 3.8 ou superior
+- Pacote `python3-venv` (no Ubuntu/Debian: `sudo apt install python3-venv`)
 
-Não há dependências externas: o projeto usa apenas a biblioteca padrão.
-
-## Como executar
+## Instalação
 
 ```bash
 git clone https://github.com/felipedelucca07/primeiroClaude.git
 cd primeiroClaude
-python3 main.py
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
 ```
 
-O arquivo `loja.db` é criado automaticamente na primeira execução, na pasta
-de onde o programa foi chamado.
+## Versão web
 
-## Menu
+```bash
+.venv/bin/python app.py
+```
+
+Abra http://127.0.0.1:5000 no navegador.
+
+| Página | Endereço |
+|--------|----------|
+| Lista de produtos (com busca) | `/` ou `/?q=termo` |
+| Novo produto | `/produtos/novo` |
+| Editar produto | `/produtos/<id>/editar` |
+
+Preços aceitam vírgula ou ponto (`49,90` ou `49.90`). Preço e estoque não podem
+ser negativos. Produtos com menos de 5 unidades aparecem com estoque baixo.
+
+## Versão de terminal
+
+```bash
+python3 main.py
+```
 
 ```
 === Loja ===
@@ -32,39 +62,36 @@ de onde o programa foi chamado.
 0. Sair
 ```
 
-| Opção | O que faz |
-|-------|-----------|
-| 1 | Pede nome, preço e estoque e cadastra o produto, informando o id gerado. |
-| 2 | Lista todos os produtos cadastrados. |
-| 3 | Mostra um produto a partir do id. |
-| 4 | Edita um produto pelo id. Deixe um campo em branco para manter o valor atual. |
-| 5 | Remove um produto pelo id. |
-| 0 | Encerra o programa (`Ctrl+C` ou `Ctrl+D` também funcionam). |
+Na edição, deixe um campo em branco para manter o valor atual. A versão de
+terminal não precisa do Flask.
 
-Preços aceitam vírgula ou ponto como separador decimal (`49,90` ou `49.90`).
-Preço e estoque não podem ser negativos.
+## Banco de dados
 
-## Exemplo
+Os dados ficam em `loja.db`, um arquivo SQLite criado automaticamente na pasta
+do projeto na primeira execução. Para começar do zero, basta apagá-lo.
 
-```
-Opção: 1
-Nome: Camiseta
-Preço: 49,90
-Estoque: 10
-Produto cadastrado com id 1.
+Tabela `produtos`:
 
-Opção: 2
-[1] Camiseta - R$ 49.90 - estoque: 10
-```
+| Coluna | Tipo | Regra |
+|--------|------|-------|
+| `id` | INTEGER | chave primária, automática |
+| `nome` | TEXT | obrigatório |
+| `preco` | REAL | maior ou igual a 0 |
+| `estoque` | INTEGER | maior ou igual a 0 |
 
 ## Estrutura
 
-- `main.py` — menu interativo e leitura dos dados digitados.
-- `loja.py` — acesso ao banco SQLite (criar, listar, buscar, atualizar e remover produtos).
+```
+app.py            rotas da aplicação web (Flask)
+loja.py           acesso ao banco SQLite
+main.py           menu interativo no terminal
+templates/        páginas HTML (Jinja2)
+static/style.css  estilos
+static/app.js     interações (busca, ordenação, confirmação, prévia)
+requirements.txt  dependências
+```
 
 ## Usando como módulo
-
-As funções de `loja.py` podem ser usadas diretamente em outro código:
 
 ```python
 import loja
@@ -72,5 +99,6 @@ import loja
 conn = loja.conectar()
 produto_id = loja.criar_produto(conn, "Caneca", 25.0, 5)
 print(dict(loja.buscar_produto(conn, produto_id)))
+print(dict(loja.resumo(conn)))
 conn.close()
 ```

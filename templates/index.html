@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block titulo %}Produtos{% endblock %}
+
+{% block conteudo %}
+<section class="cartoes">
+  <div class="cartao">
+    <span class="cartao-rotulo">Produtos</span>
+    <strong class="cartao-valor">{{ resumo.total_produtos }}</strong>
+  </div>
+  <div class="cartao">
+    <span class="cartao-rotulo">Itens em estoque</span>
+    <strong class="cartao-valor">{{ resumo.total_itens }}</strong>
+  </div>
+  <div class="cartao">
+    <span class="cartao-rotulo">Valor do estoque</span>
+    <strong class="cartao-valor">{{ resumo.valor_estoque | reais }}</strong>
+  </div>
+  <div class="cartao {{ 'cartao-alerta' if resumo.estoque_baixo }}">
+    <span class="cartao-rotulo">Estoque baixo (&lt; {{ estoque_baixo }})</span>
+    <strong class="cartao-valor">{{ resumo.estoque_baixo }}</strong>
+  </div>
+</section>
+
+<section class="painel">
+  <div class="painel-cabecalho">
+    <h1>Produtos</h1>
+    <form class="busca" method="get" action="{{ url_for('index') }}">
+      <input type="search" name="q" id="busca" value="{{ busca }}"
+             placeholder="Buscar por nome…" autocomplete="off">
+    </form>
+  </div>
+
+  {% if produtos %}
+  <div class="tabela-wrapper">
+    <table class="tabela" id="tabela-produtos">
+      <thead>
+        <tr>
+          <th data-ordenar="numero">#</th>
+          <th data-ordenar="texto">Nome</th>
+          <th data-ordenar="numero" class="numero">Preço</th>
+          <th data-ordenar="numero" class="numero">Estoque</th>
+          <th class="acoes-col">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in produtos %}
+        <tr data-nome="{{ p.nome | lower }}">
+          <td data-valor="{{ p.id }}" class="muted">{{ p.id }}</td>
+          <td data-valor="{{ p.nome }}">{{ p.nome }}</td>
+          <td data-valor="{{ p.preco }}" class="numero">{{ p.preco | reais }}</td>
+          <td data-valor="{{ p.estoque }}" class="numero">
+            {% if p.estoque == 0 %}
+              <span class="selo selo-perigo">Esgotado</span>
+            {% elif p.estoque < estoque_baixo %}
+              <span class="selo selo-alerta">{{ p.estoque }}</span>
+            {% else %}
+              <span class="selo selo-ok">{{ p.estoque }}</span>
+            {% endif %}
+          </td>
+          <td class="acoes">
+            <a class="botao botao-pequeno" href="{{ url_for('editar', produto_id=p.id) }}">Editar</a>
+            <form method="post" action="{{ url_for('remover', produto_id=p.id) }}"
+                  class="form-remover" data-nome="{{ p.nome }}">
+              <button type="submit" class="botao botao-pequeno botao-perigo">Remover</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="vazio" id="sem-resultados" hidden>Nenhum produto corresponde à busca.</p>
+  {% elif busca %}
+    <p class="vazio">Nenhum produto encontrado para “{{ busca }}”.
+      <a href="{{ url_for('index') }}">Limpar busca</a></p>
+  {% else %}
+    <div class="vazio">
+      <p>Nenhum produto cadastrado ainda.</p>
+      <a class="botao botao-primario" href="{{ url_for('novo') }}">Cadastrar o primeiro produto</a>
+    </div>
+  {% endif %}
+</section>
+
+<dialog id="dialogo-remover" class="dialogo">
+  <form method="dialog">
+    <h2>Remover produto?</h2>
+    <p>O produto <strong id="dialogo-nome"></strong> será removido permanentemente.</p>
+    <div class="dialogo-acoes">
+      <button value="cancelar" class="botao">Cancelar</button>
+      <button value="confirmar" class="botao botao-perigo">Remover</button>
+    </div>
+  </form>
+</dialog>
+{% endblock %}

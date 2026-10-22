@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block titulo %}Não encontrado{% endblock %}
+
+{% block conteudo %}
+<section class="painel painel-estreito vazio">
+  <h1>Página não encontrada</h1>
+  <p>O produto ou a página que você procura não existe.</p>
+  <a class="botao botao-primario" href="{{ url_for('index') }}">Voltar para produtos</a>
+</section>
+{% endblock %}
