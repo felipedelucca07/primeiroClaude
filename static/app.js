@@ -11,47 +11,44 @@ document.querySelectorAll(".aviso").forEach((aviso) => {
   setTimeout(fechar, 4000);
 });
 
-// Busca instantânea: filtra as linhas enquanto digita
+const grade = document.getElementById("grade-produtos");
+
+// Busca instantânea: na página de produtos, filtra os cartões enquanto digita
 const busca = document.getElementById("busca");
-const tabela = document.getElementById("tabela-produtos");
-if (busca && tabela) {
+if (busca && grade) {
   const semResultados = document.getElementById("sem-resultados");
+  const contagem = document.getElementById("contagem");
   busca.addEventListener("input", () => {
     const termo = busca.value.trim().toLowerCase();
     let visiveis = 0;
-    tabela.querySelectorAll("tbody tr").forEach((linha) => {
-      const mostra = linha.dataset.nome.includes(termo);
-      linha.hidden = !mostra;
+    grade.querySelectorAll(".produto").forEach((cartao) => {
+      const mostra = cartao.dataset.nome.includes(termo);
+      cartao.hidden = !mostra;
       if (mostra) visiveis++;
     });
     semResultados.hidden = visiveis > 0;
+    contagem.textContent = `${visiveis} resultado${visiveis === 1 ? "" : "s"}`;
   });
 }
 
-// Ordenação ao clicar no cabeçalho da tabela
-if (tabela) {
-  const cabecalhos = tabela.querySelectorAll("th[data-ordenar]");
-  cabecalhos.forEach((th) => {
-    th.addEventListener("click", () => {
-      const indice = th.cellIndex;
-      const numerico = th.dataset.ordenar === "numero";
-      const direcao = th.dataset.direcao === "asc" ? "desc" : "asc";
-      cabecalhos.forEach((outro) => delete outro.dataset.direcao);
-      th.dataset.direcao = direcao;
-
-      const corpo = tabela.tBodies[0];
-      const linhas = Array.from(corpo.rows);
-      linhas.sort((a, b) => {
-        const va = a.cells[indice].dataset.valor;
-        const vb = b.cells[indice].dataset.valor;
-        const comparacao = numerico
-          ? Number(va) - Number(vb)
-          : va.localeCompare(vb, "pt-BR", { sensitivity: "base" });
-        return direcao === "asc" ? comparacao : -comparacao;
-      });
-      linhas.forEach((linha) => corpo.appendChild(linha));
-    });
-  });
+// Ordenação pelo seletor "Ordenar por"
+const ordenar = document.getElementById("ordenar");
+if (ordenar && grade) {
+  const criterios = {
+    recentes: (a, b) => b.dataset.id - a.dataset.id,
+    "menor-preco": (a, b) => a.dataset.preco - b.dataset.preco,
+    "maior-preco": (a, b) => b.dataset.preco - a.dataset.preco,
+    nome: (a, b) =>
+      a.dataset.nome.localeCompare(b.dataset.nome, "pt-BR", { sensitivity: "base" }),
+    estoque: (a, b) => a.dataset.estoque - b.dataset.estoque,
+  };
+  const aplicarOrdem = () => {
+    const cartoes = Array.from(grade.children);
+    cartoes.sort(criterios[ordenar.value]);
+    cartoes.forEach((cartao) => grade.appendChild(cartao));
+  };
+  ordenar.addEventListener("change", aplicarOrdem);
+  aplicarOrdem();
 }
 
 // Confirmação antes de remover

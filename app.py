@@ -25,6 +25,12 @@ def formatar_reais(valor):
     return "R$ " + texto.replace(",", "_").replace(".", ",").replace("_", ".")
 
 
+@app.template_filter("preco_partes")
+def separar_preco(valor):
+    inteiro, centavos = formatar_reais(valor)[3:].split(",")
+    return inteiro, centavos
+
+
 def validar_formulario(form):
     dados = {
         "nome": form.get("nome", "").strip(),

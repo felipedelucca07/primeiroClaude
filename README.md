@@ -8,12 +8,15 @@ mesmo banco de dados (`loja.db`).
 
 - Painel com resumo: total de produtos, itens em estoque, valor do estoque e
   produtos com estoque baixo
-- Tabela de produtos com busca instantânea e ordenação por coluna
-- Selos coloridos de estoque (normal, baixo e esgotado)
+- Visual inspirado no Mercado Livre: cabeçalho amarelo com busca, botões azuis
+  e produtos em cartões com o preço em destaque
+- Busca instantânea pelo cabeçalho e seletor "Ordenar por" (recentes, preço,
+  nome e estoque)
+- Indicação de estoque nos cartões (em estoque, últimas unidades e esgotado)
 - Cadastro e edição com validação e mensagens de erro por campo
 - Botões +/− para o estoque e prévia do valor total enquanto digita
 - Confirmação antes de remover um produto
-- Tema claro/escuro automático e layout adaptado para celular
+- Layout adaptado para celular
 
 ## Requisitos
 
@@ -44,7 +47,7 @@ Abra http://127.0.0.1:5000 no navegador.
 | Editar produto | `/produtos/<id>/editar` |
 
 Preços aceitam vírgula ou ponto (`49,90` ou `49.90`). Preço e estoque não podem
-ser negativos. Produtos com menos de 5 unidades aparecem com estoque baixo.
+ser negativos. Produtos com menos de 5 unidades aparecem como "Últimas unidades!".
 
 ## Versão de terminal
 

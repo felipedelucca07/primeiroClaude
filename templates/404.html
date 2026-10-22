@@ -3,8 +3,9 @@
 
 {% block conteudo %}
 <section class="painel painel-estreito vazio">
-  <h1>Página não encontrada</h1>
-  <p>O produto ou a página que você procura não existe.</p>
-  <a class="botao botao-primario" href="{{ url_for('index') }}">Voltar para produtos</a>
+  <div class="vazio-icone" aria-hidden="true">🔍</div>
+  <h1>Parece que esta página não existe</h1>
+  <p>O produto ou a página que você procura não foi encontrado.</p>
+  <a class="botao botao-primario" href="{{ url_for('index') }}">Ir para a página principal</a>
 </section>
 {% endblock %}

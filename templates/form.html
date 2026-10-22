@@ -3,32 +3,44 @@
 {% block titulo %}{{ "Editar produto" if editando else "Novo produto" }}{% endblock %}
 
 {% block conteudo %}
+<nav class="trilha" aria-label="Navegação">
+  <a href="{{ url_for('index') }}">Produtos</a>
+  <span aria-hidden="true">›</span>
+  <span>{{ "Editar" if editando else "Novo produto" }}</span>
+</nav>
+
 <section class="painel painel-estreito">
-  <a class="voltar" href="{{ url_for('index') }}">← Voltar para produtos</a>
-  <h1>{{ "Editar “" ~ produto.nome ~ "”" if editando else "Novo produto" }}</h1>
+  <h1>{{ "Editar “" ~ produto.nome ~ "”" if editando else "Vender um produto" }}</h1>
+  <p class="subtitulo">
+    {{ "Altere os dados e salve." if editando else "Preencha os dados do anúncio." }}
+  </p>
 
   <form method="post" class="formulario" novalidate>
     <div class="campo {{ 'campo-erro' if erros.nome }}">
-      <label for="nome">Nome</label>
-      <input id="nome" name="nome" value="{{ dados.nome or '' }}" required maxlength="120" autofocus>
+      <label for="nome">Nome do produto</label>
+      <input id="nome" name="nome" value="{{ dados.nome or '' }}" required maxlength="120"
+             placeholder="Ex.: Camiseta básica algodão" autofocus>
       {% if erros.nome %}<small class="erro">{{ erros.nome }}</small>{% endif %}
     </div>
 
     <div class="campo-linha">
       <div class="campo {{ 'campo-erro' if erros.preco }}">
-        <label for="preco">Preço (R$)</label>
-        <input id="preco" name="preco" inputmode="decimal" placeholder="0,00"
-               value="{{ dados.preco if dados.preco is not none else '' }}" required>
+        <label for="preco">Preço</label>
+        <div class="campo-prefixo">
+          <span>R$</span>
+          <input id="preco" name="preco" inputmode="decimal" placeholder="0,00"
+                 value="{{ dados.preco if dados.preco is not none else '' }}" required>
+        </div>
         {% if erros.preco %}<small class="erro">{{ erros.preco }}</small>{% endif %}
       </div>
 
       <div class="campo {{ 'campo-erro' if erros.estoque }}">
-        <label for="estoque">Estoque</label>
+        <label for="estoque">Estoque disponível</label>
         <div class="contador">
-          <button type="button" class="botao" data-passo="-1" aria-label="Diminuir">−</button>
+          <button type="button" class="contador-botao" data-passo="-1" aria-label="Diminuir">−</button>
           <input id="estoque" name="estoque" type="number" min="0" step="1"
                  value="{{ dados.estoque if dados.estoque is not none else 0 }}" required>
-          <button type="button" class="botao" data-passo="1" aria-label="Aumentar">+</button>
+          <button type="button" class="contador-botao" data-passo="1" aria-label="Aumentar">+</button>
         </div>
         {% if erros.estoque %}<small class="erro">{{ erros.estoque }}</small>{% endif %}
       </div>
@@ -37,9 +49,9 @@
     <p class="previa">Valor total em estoque: <strong id="previa-total">R$ 0,00</strong></p>
 
     <div class="formulario-acoes">
-      <a class="botao" href="{{ url_for('index') }}">Cancelar</a>
+      <a class="botao botao-secundario" href="{{ url_for('index') }}">Cancelar</a>
       <button type="submit" class="botao botao-primario">
-        {{ "Salvar alterações" if editando else "Cadastrar produto" }}
+        {{ "Salvar alterações" if editando else "Publicar produto" }}
       </button>
     </div>
   </form>
